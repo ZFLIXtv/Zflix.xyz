@@ -28,21 +28,21 @@ function getDaysTotal(createdAt: string, expiresAt: string): number {
 const SubscriptionStatus: React.FC<{ user: DashboardUser }> = ({ user }) => {
   const now = new Date()
   const expiresAt = user.subscriptionExpiresAt ? new Date(user.subscriptionExpiresAt) : null
-  const oneMonthFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
-  const isExpired = !user.isSubscribed || (expiresAt !== null && expiresAt < now)
-  const isTrial = user.isSubscribed && !user.hasPaid && (expiresAt === null || expiresAt <= oneMonthFromNow) && !isExpired
-  const isActive = user.isSubscribed && !isExpired
 
+  // Valid access = subscribed AND (no expiry OR expiry in the future)
+  const hasValidAccess = user.isSubscribed && (expiresAt === null || expiresAt > now)
+  const isTrial = hasValidAccess && !user.hasPaid
+  const isActive = hasValidAccess && user.hasPaid
+
+  // Active (paid) with expiry date
   if (isActive && expiresAt && user.subscriptionExpiresAt) {
     const daysLeft = getDaysRemaining(user.subscriptionExpiresAt)
     const daysTotal = getDaysTotal(user.createdAt, user.subscriptionExpiresAt)
     const progress = Math.min(100, Math.round(((daysTotal - daysLeft) / daysTotal) * 100))
-
     return (
       <div className="bg-green-500/5 border border-green-500/20 rounded-xl p-5">
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2 mb-3">
           <Badge variant="success">Abonnement actif</Badge>
-          {isTrial && <Badge variant="info">Période d&apos;essai</Badge>}
         </div>
         <p className="text-sm text-accent-off mb-1">
           Expire le{' '}
@@ -54,7 +54,6 @@ const SubscriptionStatus: React.FC<{ user: DashboardUser }> = ({ user }) => {
           <span className="text-green-400 font-semibold">{daysLeft} jour{daysLeft !== 1 ? 's' : ''}</span>{' '}
           restant{daysLeft !== 1 ? 's' : ''}
         </p>
-        {/* Progress bar */}
         <div className="w-full bg-dark rounded-full h-1.5">
           <div
             className="bg-green-400 h-1.5 rounded-full transition-all duration-700"
@@ -67,6 +66,19 @@ const SubscriptionStatus: React.FC<{ user: DashboardUser }> = ({ user }) => {
     )
   }
 
+  // Active (paid) without expiry — unlimited access
+  if (isActive && !expiresAt) {
+    return (
+      <div className="bg-green-500/5 border border-green-500/20 rounded-xl p-5">
+        <div className="flex items-center gap-2 mb-3">
+          <Badge variant="success">Abonnement actif</Badge>
+        </div>
+        <p className="text-sm text-accent-off">Accès illimité à votre abonnement.</p>
+      </div>
+    )
+  }
+
+  // Trial with expiry date
   if (isTrial && expiresAt && user.subscriptionExpiresAt) {
     const daysLeft = getDaysRemaining(user.subscriptionExpiresAt)
     return (
@@ -77,6 +89,20 @@ const SubscriptionStatus: React.FC<{ user: DashboardUser }> = ({ user }) => {
         <p className="text-sm text-accent-off">
           <span className="text-sky-400 font-semibold">{daysLeft} jour{daysLeft !== 1 ? 's' : ''}</span>{' '}
           restant{daysLeft !== 1 ? 's' : ''} dans votre période d&apos;essai
+        </p>
+      </div>
+    )
+  }
+
+  // Trial without expiry date
+  if (isTrial && !expiresAt) {
+    return (
+      <div className="bg-sky-500/5 border border-sky-500/20 rounded-xl p-5">
+        <div className="flex items-center gap-2 mb-3">
+          <Badge variant="info">Période d&apos;essai</Badge>
+        </div>
+        <p className="text-sm text-accent-off">
+          Vous bénéficiez d&apos;un accès d&apos;essai à ZFlix.
         </p>
       </div>
     )
