@@ -143,10 +143,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         }
 
         // Send renewal email
-        try {
-          await sendSubscriptionRenewedEmail(user.email, newExpiry, durationDays)
-        } catch (emailError) {
-          console.error('[stripe/webhook] Renewal email failed:', emailError)
+        if (user.email) {
+          try {
+            await sendSubscriptionRenewedEmail(user.email, newExpiry, durationDays)
+          } catch (emailError) {
+            console.error('[stripe/webhook] Renewal email failed:', emailError)
+          }
         }
 
         // Log audit
