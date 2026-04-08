@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                    String    @id @default(cuid())
+  username              String    @unique
+  email                 String?   @unique
+  passwordHash          String
+  jellyfinUserId        String?   @unique
+  jellyfinUsername      String?   @unique
+  isJellyfinAdmin       Boolean   @default(false)
+  subscriptionExpiresAt DateTime?
+  isSubscribed          Boolean   @default(false)
+  trialUsed             Boolean   @default(false)
+  referralCode          String?   @unique
+  referredById          String?
+  referredBy            User?     @relation("Referrals", fields: [referredById], references: [id])
+  referrals             User[]    @relation("Referrals")
+  emailVerified         Boolean   @default(false)
+  emailVerifyToken      String?
+  resetPasswordToken    String?
+  resetPasswordExpires  DateTime?
+  isAdmin               Boolean   @default(false)
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  payments              Payment[]
+}
+
+model Payment {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  stripePaymentId String?
+  amount          Int
+  durationDays    Int
+  status          String
+  createdAt       DateTime @default(now())
+}
+
+model ReferralReward {
+  id         String   @id @default(cuid())
+  referrerId String
+  referredId String
+  rewardDays Int      @default(30)
+  appliedAt  DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  details   String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+}

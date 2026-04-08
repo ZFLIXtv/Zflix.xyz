@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: zflix-db-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: zflix
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: zflix
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+volumes:
+  postgres_dev_data:
+    driver: local
