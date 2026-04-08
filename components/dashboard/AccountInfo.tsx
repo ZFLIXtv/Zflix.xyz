@@ -88,7 +88,11 @@ const SubscriptionStatus: React.FC<{ user: DashboardUser }> = ({ user }) => {
         </div>
         <p className="text-sm text-accent-off">
           <span className="text-sky-400 font-semibold">{daysLeft} jour{daysLeft !== 1 ? 's' : ''}</span>{' '}
-          restant{daysLeft !== 1 ? 's' : ''} dans votre période d&apos;essai
+          restant{daysLeft !== 1 ? 's' : ''}{' '}dans votre période d&apos;essai
+        </p>
+        <p className="text-sm text-accent-off mt-1">
+          Expire le{' '}
+          <span className="text-[#E8F4FA] font-medium">{formatDateFr(user.subscriptionExpiresAt)}</span>
         </p>
       </div>
     )
