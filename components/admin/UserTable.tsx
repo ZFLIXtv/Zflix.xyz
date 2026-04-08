@@ -223,6 +223,7 @@ const UserTable: React.FC<UserTableProps> = ({ searchQuery, filter }) => {
         isOpen={extendUserId !== null}
         onClose={() => setExtendUserId(null)}
         userId={extendUserId ?? ''}
+        jellyfinId={null}
         userEmail={extendUserLabel}
         onSuccess={() => void fetchUsers()}
       />
