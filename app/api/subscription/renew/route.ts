@@ -65,7 +65,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const checkoutUrl = await createCheckoutSession(
       payload.userId,
-      payload.email,
+      payload.email ?? '',
       planId.trim() as PlanId,
       process.env.NEXT_PUBLIC_APP_URL ?? '',
     )
