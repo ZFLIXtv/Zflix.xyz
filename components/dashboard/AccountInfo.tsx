@@ -220,6 +220,25 @@ const AccountInfo: React.FC<{ user: DashboardUser }> = ({ user }) => {
         </h3>
         <SubscriptionStatus user={user} />
       </div>
+
+      {/* Access Button */}
+      <a
+        href="https://www.zflixtv.fr"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center justify-center gap-3 w-full px-6 py-4 rounded-xl text-base font-semibold transition-all duration-200 hover:shadow-[0_0_32px_rgba(0,212,255,0.25)]"
+        style={{
+          background: 'linear-gradient(135deg, rgba(0,212,255,0.15) 0%, rgba(0,212,255,0.05) 100%)',
+          border: '1px solid rgba(0,212,255,0.3)',
+          color: 'rgb(0,212,255)',
+        }}
+      >
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        Accès à ZFLIXTV !
+      </a>
     </div>
   )
 }
