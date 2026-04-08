@@ -28,11 +28,13 @@ function getDaysTotal(createdAt: string, expiresAt: string): number {
 const SubscriptionStatus: React.FC<{ user: DashboardUser }> = ({ user }) => {
   const now = new Date()
   const expiresAt = user.subscriptionExpiresAt ? new Date(user.subscriptionExpiresAt) : null
+  const oneMonthFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
 
   // Valid access = subscribed AND (no expiry OR expiry in the future)
   const hasValidAccess = user.isSubscribed && (expiresAt === null || expiresAt > now)
-  const isTrial = hasValidAccess && !user.hasPaid
-  const isActive = hasValidAccess && user.hasPaid
+  // Active = paid OR expiry > 1 month from now (same rule as admin panel)
+  const isActive = hasValidAccess && (user.hasPaid || (expiresAt !== null && expiresAt > oneMonthFromNow))
+  const isTrial = hasValidAccess && !isActive
 
   // Active (paid) with expiry date
   if (isActive && expiresAt && user.subscriptionExpiresAt) {
@@ -150,21 +152,25 @@ const AccountInfo: React.FC<{ user: DashboardUser }> = ({ user }) => {
   const now = new Date()
   const oneMonthFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
   const expiresAt = user.subscriptionExpiresAt ? new Date(user.subscriptionExpiresAt) : null
-  const isTrialAccount = user.isSubscribed && !user.hasPaid && (expiresAt === null || expiresAt <= oneMonthFromNow)
+  const hasValidAccess = user.isSubscribed && (expiresAt === null || expiresAt > now)
+  const isActiveAccount = hasValidAccess && (user.hasPaid || (expiresAt !== null && expiresAt > oneMonthFromNow))
+  const isTrialAccount = hasValidAccess && !isActiveAccount
 
   const accountType = user.isAdmin
     ? 'Administrateur'
-    : user.isSubscribed
-    ? isTrialAccount
-      ? 'Essai'
-      : 'Abonné'
-    : 'Gratuit'
+    : isActiveAccount
+    ? 'Abonné'
+    : isTrialAccount
+    ? 'Essai'
+    : 'Expiré'
 
   const accountBadgeVariant = user.isAdmin
     ? 'warning'
-    : user.isSubscribed
+    : isActiveAccount
     ? 'success'
-    : 'default'
+    : isTrialAccount
+    ? 'info'
+    : 'danger'
 
   return (
     <div className="space-y-6">

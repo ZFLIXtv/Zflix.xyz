@@ -106,8 +106,9 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({ user, onRenew }) =>
   const now = new Date()
   const expiresAt = user.subscriptionExpiresAt ? new Date(user.subscriptionExpiresAt) : null
   const oneMonthFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
-  const isActive = user.isSubscribed && (expiresAt === null || expiresAt > now)
-  const isTrial = isActive && !user.hasPaid && (expiresAt === null || expiresAt <= oneMonthFromNow)
+  const hasValidAccess = user.isSubscribed && (expiresAt === null || expiresAt > now)
+  const isActive = hasValidAccess && (user.hasPaid || (expiresAt !== null && expiresAt > oneMonthFromNow))
+  const isTrial = hasValidAccess && !isActive
 
   return (
     <div className="space-y-6">
