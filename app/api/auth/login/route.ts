@@ -55,7 +55,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   // 3. Rate limit by IP
   const ip = getClientIp(request)
   const rateLimitKey = `login:${ip}`
-  const allowed = await checkRateLimit(rateLimitKey, 5, 15 * 60 * 1000)
+  const { allowed } = checkRateLimit(rateLimitKey, 5, 15 * 60 * 1000)
   if (!allowed) {
     return NextResponse.json(
       {
