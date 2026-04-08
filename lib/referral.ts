@@ -69,6 +69,7 @@ export async function applyReferralReward(
   })
 
   // Notify referrer by email (non-blocking)
+  if (!referrer.email) return
   sendReferralRewardEmail(referrer.email, REWARD_DAYS, referredEmail).catch(
     (err: unknown) => {
       console.error('[referral] Failed to send reward email:', err)
@@ -97,7 +98,7 @@ export async function getUserByReferralCode(
   if (!user) return null
   if (user.payments.length === 0) return null
 
-  return { id: user.id, email: user.email }
+  return { id: user.id, email: user.email ?? '' }
 }
 
 // ─── generateUniqueReferralCode ───────────────────────────────────────────────
